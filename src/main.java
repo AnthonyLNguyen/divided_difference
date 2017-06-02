@@ -1,22 +1,48 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 /**
  * Created by Anthony on 5/22/2017.
  */
 public class main {
     static public void main(String args[]) {
-        int n = 4;
-        double[][] a = new double[n][n];
-        double[] x = new double[n];
-        double[] y = new double[n];
-        x[0] = 1;
-        x[1] = 3d/2d;
-        x[2] = 0;
-        x[3] = 2;
-        y[0] = 3;
-        y[1] = 13d/4d;
-        y[2] = 3;
-        y[3] = 5d/3d;
-        dd(a,x,y);
-        System.out.println(arrayToString(a,x));
+        input();
+    }
+
+    static void input(){
+        double[][] a;
+        double[] x;
+        double[] y;
+        int n = 0;
+        try {
+            File f = new File("input.txt");
+            Scanner s = new Scanner(f);
+            x = read(s.nextLine());
+            y = read(s.nextLine());
+            n = x.length;
+            a = new double[n][n];
+            dd(a,x,y);
+            System.out.println(arrayToString(a,x));
+            poly p = new poly(a,x);
+            System.out.println(p.nested());
+            System.out.println(p.interpolating());
+            System.out.println(p.simply());
+
+            s.close();
+        } catch (FileNotFoundException e) {
+            System.err.println("Caught Exception: " + e.getMessage());
+        }
+
+
+    }
+
+    static double[] read(String s) {
+        String[] a = s.split(" ");
+        double[] result = new double[a.length];
+        for (int i = 0 ; i < result.length; i++)
+            result[i] = Double.parseDouble(a[i]);
+        return result;
     }
 
     static void dd(double[][] a, double[] x, double[] y){
@@ -32,20 +58,26 @@ public class main {
 
     static String arrayToString(double[][] a, double[] x){
         int n = a.length;
-        String result = String.format("%-24s","x");
-        result += String.format("%-24s","f[]");
-        for (int i = 1; i < n; i++) {
-            result += "f[";
-            for (int j = 0; j < i; j++) {
-                result += ",";
+        String next = "f[]";
+        String result = String.format("%-17s","x");
+        result += String.format("%-17s",next);
+        if ( n > 15){
+            for (int i = 1; i < n; i++) {
+                next = next.substring(0, 2) + i + next.substring(3, next.length()) + ",]";
+                result += String.format("%-17s", next);
+                next = "f[]";
             }
-            result += String.format("%-20s","]");
+        } else {
+            for (int i = 1; i < n; i++) {
+                next = next.substring(0, 2) + "," + next.substring(2, next.length());
+                result += String.format("%-17s", next);
+            }
         }
         result += "\n";
         for (int i = 0; i < n; i+=1) {
-            result += String.format("%-24s",x[i]);
+            result += String.format("%-17f",x[i]);
             for (int j = 0; j < n - i; j+=1) {
-                result += String.format("%-24s",a[i][j]);
+                result += String.format("%-17f",a[i][j]);
             }
             result += "\n";
         }
